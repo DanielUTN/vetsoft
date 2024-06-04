@@ -24,8 +24,38 @@ class ProviderModelTest(TestCase):
         # Verificar que se generaron errores 
         self.assertIsNotNone(errors)  
 
+    
+class ClientModelTest(TestCase):
+    def test_can_create_and_get_client(self):
+        Client.save_client(
+            {
+                "name": "Nombre",
+                "phone": "541555232",
+                "address": "direccion",
+                "email": "hola@vetsoft.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 1)
 
-# class ClientModelTest(TestCase):
+        self.assertEqual(clients[0].name, "Nombre")
+        self.assertEqual(clients[0].phone, "541555232")
+        self.assertEqual(clients[0].address, "direccion")
+        self.assertEqual(clients[0].email, "hola@vetsoft.com")
+
+    def test_cannot_create_a_client(self):
+        response = Client.save_client(
+            {
+                "name": "Nombre",
+                "phone": "861555232",
+                "address": "direccion",
+                "email": "hola@vetsoft.com",
+            }
+        )
+
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(response[1]["phone"], "El teléfono debe comenzar con 54")
 #     def test_can_create_and_get_client(self):
 #         Client.save_client(
 #             {
