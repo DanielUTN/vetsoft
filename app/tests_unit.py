@@ -26,7 +26,7 @@ class ProviderModelTest(TestCase):
 
     
 class ClientModelTest(TestCase):
-    def test_can_create_and_get_client(self):
+    def test_can_create_client_phone_54(self):
         Client.save_client(
             {
                 "name": "Nombre",
@@ -43,7 +43,7 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].address, "direccion")
         self.assertEqual(clients[0].email, "hola@vetsoft.com")
 
-    def test_cannot_create_a_client(self):
+    def test_cannot_create_a_client_phone(self):
         response = Client.save_client(
             {
                 "name": "Nombre",
