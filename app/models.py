@@ -2,6 +2,10 @@ import re
 
 from django.db import models
 
+########################### SEPARADOR ###################################
+# agrego actividad 4 punto 3 cambiar address por city
+#########################################################################
+
 
 def validate_client(data):
     """ Valida los datos del cliente """
@@ -10,6 +14,10 @@ def validate_client(data):
     name = data.get("name", "")
     phone = data.get("phone", "")
     email = data.get("email", "")
+    city = data.get("city", "")
+
+    if city not in [choice[0] for choice in City.choices]:
+        errors["city"] = "Por favor debe seleccionar una ciudad, Laplata, Berisso o Ensenada"
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -56,13 +64,28 @@ def validate_provider(data):
 
     return errors
 
+########################### SEPARADOR ###################################
+# actividad 4 punto 3 cambiar address por city
+#########################################################################
+
+
+class City(models.TextChoices):
+    """Define las opciones de ciudades para los clientes"""
+    LAPLATA = "La Plata",
+    BERISSO = "Berisso",
+    ENSENADA = "Ensenada",
+
 
 class Client(models.Model):
     """Representa un cliente de la veterinaria"""
     name = models.CharField(max_length=100)
     phone = models.IntegerField()
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(
+        max_length=100,
+        choices=City.choices,
+        default=City.LAPLATA,
+    )
 
     def __str__(self):
         """Retorna la representación en cadena del cliente"""
@@ -80,7 +103,8 @@ class Client(models.Model):
             name=client_data.get("name"),
             phone=client_data.get("phone"),
             email=client_data.get("email"),
-            address=client_data.get("address"),
+            # se cambia address por city actividad 4 punto 3
+            city=client_data.get("city"),
         )
 
         return True, None
@@ -95,7 +119,8 @@ class Client(models.Model):
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
-        self.address = client_data.get("address", "") or self.address
+        # se cambia address por city actividad 4 punto 3
+        self.city = client_data.get("city", "") or self.city
 
         self.save()
 

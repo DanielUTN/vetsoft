@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
-from .models import Breed, Client, Medicine, Pet, Product, Provider, Vet
+from .models import Breed, Client, Medicine, Pet, Product, Provider, Vet, City
 
 
 def home(request):
@@ -14,8 +14,13 @@ def clients_repository(request):
     return render(request, "clients/repository.html", {"clients": clients})
 
 
+########################### SEPARADOR ###################################
+# Agrego punto actividad 4 punto 3 cambiar address a city
+#########################################################################
+
 def clients_form(request, id=None):
     """Renderiza y maneja el formulario para crear o editar clientes."""
+    city = City.choices
     if request.method == "POST":
         client_id = request.POST.get("id", "")
         errors = {}
@@ -32,14 +37,14 @@ def clients_form(request, id=None):
 
         return render(
             request, "clients/form.html", {"errors": errors,
-                                           "client": request.POST},
+                                           "client": request.POST, "city": city},
         )
 
     client = None
     if id is not None:
         client = get_object_or_404(Client, pk=id)
 
-    return render(request, "clients/form.html", {"client": client})
+    return render(request, "clients/form.html", {"client": client, "city": city})
 
 
 def clients_delete(request):
