@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from app.models import Breed, Client, Medicine, Pet, Product, Provider, Vet
+import datetime
 
 
 class ProviderModelTest(TestCase):
@@ -13,31 +14,72 @@ class ProviderModelTest(TestCase):
             }
         )
         provider = Provider.objects.get(pk=1)
-        
+
         self.assertEqual(provider.address, "7 entre 13 y 44")
-        
+
         # Intentar actualizar la dirección con un valor inválido (cadena vacía)
         success, errors = provider.update_provider({"address": ""})
 
         # Verificar que la actualización no fue exitosa
-        self.assertFalse(success) 
+        self.assertFalse(success)
 
-        # Verificar que se generaron errores 
-        self.assertIsNotNone(errors)  
+        # Verificar que se generaron errores
+        self.assertIsNotNone(errors)
 
 
-# class ClientModelTest(TestCase):
-#     def test_can_create_and_get_client(self):
-#         Client.save_client(
-#             {
-#                 "name": "Juan Sebastian Veron",
-#                 "phone": "221555232",
-#                 "address": "13 y 44",
-#                 "email": "brujita75@hotmail.com",
-#             }
-#         )
-#         clients = Client.objects.all()
-#         self.assertEqual(len(clients), 1)
+class ClientModelTest(TestCase):
+    def test_can_create_and_get_client(self):
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 1)
+
+    def test_phone_empty(self):
+        response = Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(response[1]['phone'], 'Por favor ingrese un teléfono')
+
+    def test_phone_not_numeric(self):
+        response = Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "123abc",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(response[1]['phone'],
+                         'Por favor ingrese un teléfono valido')
+
+    def test_phone_zero(self):
+        response = Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "0",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(response[1]['phone'], 'El número debe ser positivo')
+
 
 #         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
 #         self.assertEqual(clients[0].phone, "221555232")
@@ -93,9 +135,9 @@ class ClientModelTest(TestCase):
             }
         )
         clients = Client.objects.all()
-        self.assertEqual(len(clients),0)
-        self.assertEqual(response[1]["name"],"El nombre solo puede contener letras y espacios")
-
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(
+            response[1]["name"], "El nombre solo puede contener letras y espacios")
 
 
 class MedicineModelTest(TestCase):
@@ -109,12 +151,13 @@ class MedicineModelTest(TestCase):
         )
         self.assertTrue(success)
         self.assertIsNone(errors)
-        
+
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 1)
 
         self.assertEqual(medicines[0].name, "Amoxicilina")
-        self.assertEqual(medicines[0].description, "Antibiotico de amplio espectro")
+        self.assertEqual(medicines[0].description,
+                         "Antibiotico de amplio espectro")
         self.assertEqual(medicines[0].dose, 6)
 
     def test_update_medicine_with_invalid_dose_zero(self):
@@ -122,7 +165,7 @@ class MedicineModelTest(TestCase):
             {
                 "name": "Amoxicilina",
                 "description": "Antibiotico de amplio espectro",
-                "dose":"0",
+                "dose": "0",
             }
         )
         medicinas = Medicine.objects.all()
@@ -133,28 +176,29 @@ class MedicineModelTest(TestCase):
             {
                 "name": "Amoxicilina",
                 "description": "Antibiotico de amplio espectro",
-                "dose":"11",
+                "dose": "11",
             }
         )
-        medicinas=Medicine.objects.all()
-        self.assertEqual(len(medicinas),0)
-        self.assertEqual(response[1]['dose'],'La dosis debe estar entre 1 a 10')
-
+        medicinas = Medicine.objects.all()
+        self.assertEqual(len(medicinas), 0)
+        self.assertEqual(response[1]['dose'],
+                         'La dosis debe estar entre 1 a 10')
 
     def test_update_medicine_with_invalid_dose_negative(self):
         response = Medicine.save_medicine(
             {
                 "name": "Amoxicilina",
                 "description": "Antibiotico de amplio espectro",
-                "dose":"-5",
+                "dose": "-5",
             }
         )
         medicinas = Medicine.objects.all()
         self.assertEqual(len(medicinas), 0)
-        self.assertEqual(response[1]['dose'],'La dosis debe ser un número entero positivo')
+        self.assertEqual(response[1]['dose'],
+                         'La dosis debe ser un número entero positivo')
 
-        
-#Test de veterinario
+
+# Test de veterinario
 class VetModelTest(TestCase):
     def test_can_create_and_get_vet(self):
         Vet.save_vet(
@@ -204,10 +248,11 @@ class VetModelTest(TestCase):
                 "especialidad":"",
             }
         )
+
         vets = Vet.objects.all()
         self.assertEqual(len(vets),0)
         self.assertEqual(response[1]["especialidad"],"Por favor seleccione una especialidad")
-        
+
 class ProductModelTest(TestCase):
     def test_can_create_and_get_product(self):
         Product.save_product(
@@ -236,8 +281,8 @@ class ProductModelTest(TestCase):
 
         products = Product.objects.all()
         self.assertEqual(len(products), 0)
-        self.assertEqual(response[1]["price"], "El precio debe ser mayor a cero")
-
+        self.assertEqual(response[1]["price"],
+                         "El precio debe ser mayor a cero")
 
     def test_create_product_with_no_product(self):
         response = Product.save_product(
@@ -247,10 +292,11 @@ class ProductModelTest(TestCase):
                 "price": 0,
             }
         )
-        
+
         products = Product.objects.all()
         self.assertEqual(len(products), 0)
-        self.assertEqual(response[1]["price"], "El precio debe ser mayor a cero")
+        self.assertEqual(response[1]["price"],
+                         "El precio debe ser mayor a cero")
 
 
 # Agrego test unitarios para punto 5 actividad 3
@@ -283,3 +329,53 @@ class PetModelTest(TestCase):
         self.assertEqual(pet_dog.breed, Breed.DOG)
         self.assertEqual(pet_cat.breed, Breed.CAT)
         self.assertEqual(pet_bird.breed, Breed.BIRD)
+
+    def test_can_create_a_pet(self):
+        response = Pet.save_pet(
+            {
+                "name": "Nombre",
+                "breed": Breed.DOG,
+                "birthday": "2024-06-01",
+            }
+        )
+
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 1)
+
+        self.assertEqual(pets[0].name, "Nombre")
+        self.assertEqual(pets[0].breed, Breed.DOG)
+        self.assertEqual(pets[0].birthday, datetime.date(2024, 6, 1))
+
+
+class ClientModelTest(TestCase):
+    def test_can_create_client_phone_54(self):
+        Client.save_client(
+            {
+                "name": "Nombre",
+                "phone": "541555232",
+                "address": "direccion",
+                "email": "hola@vetsoft.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 1)
+
+        self.assertEqual(clients[0].name, "Nombre")
+        self.assertEqual(clients[0].phone, 541555232)
+        self.assertEqual(clients[0].address, "direccion")
+        self.assertEqual(clients[0].email, "hola@vetsoft.com")
+
+    def test_cannot_create_a_client_phone(self):
+        response = Client.save_client(
+            {
+                "name": "Nombre",
+                "phone": "861555232",
+                "address": "direccion",
+                "email": "hola@vetsoft.com",
+            }
+        )
+
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(response[1]["phone"],
+                         "El teléfono debe comenzar con 54")
