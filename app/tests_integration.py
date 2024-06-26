@@ -95,7 +95,9 @@ class ClientsTest(TestCase):
             },
         )
 
-        self.assertContains(response, "Por favor el email debe ser del dominio @vetsoft.com")
+        self.assertContains(
+            response, "Por favor el email debe ser del dominio @vetsoft.com")
+
 
     def test_can_create_a_client_city(self):
         response = self.client.post(
@@ -337,13 +339,26 @@ class PetTest(TestCase):
             reverse("pets_form"),
             data={
                 "name": "Nombre",
-                "breed": Breed.DOG,
+                "breed": "Dog",
+                "birthday": "2024-06-01",
+            },
+
+        )
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 1)
+        self.assertEqual(pets[0].name, "Nombre")
+        self.assertEqual(pets[0].breed, Breed.DOG)
+        self.assertEqual(pets[0].birthday, datetime.date(2024, 6, 1))
+
+    def test_cannot_create_pet(self):
+        response = self.client.post(
+            reverse("pets_form"),
+            data={
+                "name": "Nombre",
+                "breed": "Mascota",
                 "birthday": "2024-06-01",
             },
         )
         pets = Pet.objects.all()
-        self.assertEqual(len(pets), 1)
-
-        self.assertEqual(pets[0].name, "Nombre")
-        self.assertEqual(pets[0].breed, Breed.DOG)
-        self.assertEqual(pets[0].birthday, datetime.date(2024, 6, 1))
+        self.assertEqual(len(pets), 0)
+        self.assertContains(response, "No esta esa opcion")

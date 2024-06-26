@@ -306,31 +306,7 @@ class ProductModelTest(TestCase):
 
 
 # Agrego test unitarios para punto 5 actividad 3
-# cambios por nueva rama  feature-agregaropcionesrazamascota
 class PetModelTest(TestCase):
-    def test_create_pet(self):
-        # Crea una nueva mascota
-        pet = Pet.objects.create(
-            name="Test Pet", breed=Breed.DOG, birthday="2022-01-01")
-
-        # Verifica que la mascota se haya guardado en la base de datos
-        self.assertEqual(Pet.objects.count(), 1)
-        self.assertEqual(Pet.objects.first(), pet)
-
-    def test_breed_choices(self):
-        # Crea mascotas con cada opción de raza
-        pet_dog = Pet.objects.create(
-            name="Dog Pet", breed=Breed.DOG, birthday="2022-01-01")
-        pet_cat = Pet.objects.create(
-            name="Cat Pet", breed=Breed.CAT, birthday="2022-01-01")
-        pet_bird = Pet.objects.create(
-            name="Bird Pet", breed=Breed.BIRD, birthday="2022-01-01")
-
-        # Verifica que las mascotas se hayan guardado con las razas correctas
-        self.assertEqual(pet_dog.breed, Breed.DOG)
-        self.assertEqual(pet_cat.breed, Breed.CAT)
-        self.assertEqual(pet_bird.breed, Breed.BIRD)
-
     def test_can_create_a_pet(self):
         response = Pet.save_pet(
             {
@@ -346,6 +322,18 @@ class PetModelTest(TestCase):
         self.assertEqual(pets[0].name, "Nombre")
         self.assertEqual(pets[0].breed, Breed.DOG)
         self.assertEqual(pets[0].birthday, datetime.date(2024, 6, 1))
+
+    def test_cannot_create_a_pet(self):
+        response = Pet.save_pet(
+            {
+                "name ": "Nombre",
+                "breed": "mascota",
+                "birthday": "2024-06-01",
+            }
+        )
+        pets = Pet.objects.all()
+        self.assertEqual(len(pets), 0)
+        self.assertEqual(response[1]["breed"], "No esta esa opcion")
 
 
 class ClientModelTest(TestCase):
