@@ -34,7 +34,7 @@ def clients_form(request, id=None):
         return render(
             request, "clients/form.html", {"errors": errors,
                                            "client": request.POST,
-                                           "city": city},
+                                           "cities": city},
 
         )
 
