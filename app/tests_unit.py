@@ -246,18 +246,21 @@ class VetModelTest(TestCase):
         vets = Vet.objects.all()
         self.assertEqual(len(vets), 0)
 
-    def test_speciality_field(self):
-        vet = Vet.objects.create(
-            name="Ana Perez",
-            phone="2314551234",
-            address="Calle Falsa 123",
-            email="ana_perez@gmail.com",
-            speciality="cirugía"
+        
+    def test_can_create_and_get_speciality(self):
+        response = Vet.save_vet(
+            {
+                "name": "234#~$",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+                "especialidad":"",
+            }
         )
 
-        # Verificar que el campo especialidad se guarda correctamente
-        self.assertEqual(vet.speciality, "cirugía")
-
+        vets = Vet.objects.all()
+        self.assertEqual(len(vets),0)
+        self.assertEqual(response[1]["especialidad"],"Por favor seleccione una especialidad")
 
 class ProductModelTest(TestCase):
     def test_can_create_and_get_product(self):
