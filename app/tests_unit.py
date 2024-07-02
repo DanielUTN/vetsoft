@@ -28,6 +28,20 @@ class ProviderModelTest(TestCase):
 
 
 class ClientModelTest(TestCase):
+
+    def test_can_create_and_get_client_space(self):
+        response = Client.save_client(
+            {
+                "name": " ",
+                "phone": "54221555232",
+                "city": City.BERISSO,
+                "email": "email@vetsoft.com",
+            }
+        )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertEqual(response[1]["name"], "El nombre no puede estar vacío o contener solo espacios")
+    
     def test_can_create_a_client_city(self):
         response = Client.save_client(
             {

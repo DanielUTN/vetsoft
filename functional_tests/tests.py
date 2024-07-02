@@ -97,6 +97,27 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
 
 
 class ClientsRepoTestCase(PlaywrightTestCase):
+
+    def test_should_not_be_able_to_create_a_name_space(self):
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill(" ")
+        self.page.get_by_label("Ciudad").select_option("Berisso")
+        self.page.get_by_label("Teléfono").fill("5423145553")
+        self.page.get_by_label("Email").fill("eduardola@vetsoft.com")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text(
+            "El nombre no puede estar vacío o contener solo espacios")).to_be_visible()
+        expect(self.page.get_by_text(
+            "Por favor ingrese un teléfono")).not_to_be_visible()
+        expect(self.page.get_by_text(
+            "Por favor ingrese un email")).not_to_be_visible()
+        
+
     def test_should_show_message_if_table_is_empty(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
@@ -211,7 +232,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text(
-            "Por favor ingrese un nombre")).to_be_visible()
+            "El nombre no puede estar vacío o contener solo espacios")).to_be_visible()
         expect(self.page.get_by_text(
             "Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text(
@@ -568,7 +589,7 @@ class ClientCreateTestCasePhone(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text(
-            "Por favor ingrese un nombre")).to_be_visible()
+            "El nombre no puede estar vacío o contener solo espacios")).to_be_visible()
         expect(self.page.get_by_text(
             "Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text(
