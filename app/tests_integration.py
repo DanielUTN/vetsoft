@@ -50,7 +50,7 @@ class ClientsTest(TestCase):
             data={},
         )
 
-        self.assertContains(response, "Por favor ingrese un nombre")
+        self.assertContains(response, "El nombre no puede estar vacío o contener solo espacios")
         self.assertContains(response, "Por favor ingrese un teléfono")
         self.assertContains(response, "Por favor ingrese un email")
 

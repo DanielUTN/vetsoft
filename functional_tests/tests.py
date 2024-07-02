@@ -211,7 +211,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text(
-            "Por favor ingrese un nombre")).to_be_visible()
+            "El nombre no puede estar vacío o contener solo espacios")).to_be_visible()
         expect(self.page.get_by_text(
             "Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text(
@@ -568,7 +568,7 @@ class ClientCreateTestCasePhone(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text(
-            "Por favor ingrese un nombre")).to_be_visible()
+            "El nombre no puede estar vacío o contener solo espacios")).to_be_visible()
         expect(self.page.get_by_text(
             "Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text(
