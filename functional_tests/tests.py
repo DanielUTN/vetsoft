@@ -4,7 +4,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from playwright.sync_api import Browser, expect, sync_playwright
 
-from app.models import Provider, Vet, Client
+from app.models import Provider, Vet, Client, City
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -88,7 +88,7 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Pérez")
         self.page.get_by_label("Teléfono").fill("123456789")
         self.page.get_by_label("Email").fill("juan@example")
-        self.page.get_by_label("Ciudad").select_option("Berisso")
+        self.page.get_by_label("Ciudad").select_option(City.BERISSO)
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -126,7 +126,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_client_edit_action(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            city="Berisso",
+            city=City.BERISSO,
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -194,14 +194,14 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("brujita75@vetsoft.com")
-        self.page.get_by_label("Ciudad").select_option("Berisso")
+        self.page.get_by_label("Ciudad").select_option(City.BERISSO)
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("54221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
-        expect(self.page.get_by_text("Berisso")).to_be_visible()
+        expect(self.page.get_by_text(City.BERISSO)).to_be_visible()
 
     def test_should_view_errors_if_form_is_invalid(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
@@ -237,7 +237,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_edit_a_client(self):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            city="Berisso",
+            city=City.BERISSO,
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -253,7 +253,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
-        expect(self.page.get_by_text("Berisso")).not_to_be_visible()
+        expect(self.page.get_by_text(City.BERISSO)).not_to_be_visible()
         expect(self.page.get_by_text("54221555232")).not_to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).not_to_be_visible()
 
@@ -275,7 +275,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_role("form")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("1243##$")
-        self.page.get_by_label("Ciudad").select_option("Berisso")
+        self.page.get_by_label("Ciudad").select_option(City.BERISSO)
         self.page.get_by_label("Teléfono").fill("5423145553")
         self.page.get_by_label("Email").fill("eduardola@vetsoft.com")
 
@@ -550,14 +550,14 @@ class ClientCreateTestCasePhone(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("NombrePersona")
         self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("email@vetsoft.com")
-        self.page.get_by_label("Ciudad").select_option("Berisso")
+        self.page.get_by_label("Ciudad").select_option(City.BERISSO)
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("NombrePersona")).to_be_visible()
         expect(self.page.get_by_text("54221555232")).to_be_visible()
         expect(self.page.get_by_text("email@vetsoft.com")).to_be_visible()
-        expect(self.page.get_by_text("Berisso")).to_be_visible()
+        expect(self.page.get_by_text(City.BERISSO)).to_be_visible()
 
     def test_should_not_be_able_to_create_a_client_phone(self):
 
@@ -590,6 +590,7 @@ class ClientCreateTestCasePhone(PlaywrightTestCase):
         expect(self.page.get_by_text(
             "El teléfono debe comenzar con 54")).to_be_visible()
 
+
 class ClientCreateTestCaseCity(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_client_city(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
@@ -599,7 +600,7 @@ class ClientCreateTestCaseCity(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("NombreCliente")
         self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("email@vetsoft.com")
-        self.page.get_by_label("Ciudad").select_option("Berisso")
+        self.page.get_by_label("Ciudad").select_option(City.BERISSO)
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -610,7 +611,7 @@ class ClientCreateTestCaseCity(PlaywrightTestCase):
         expect(self.page.get_by_text(
             "email@vetsoft.com")).to_be_visible()
         expect(self.page.get_by_text(
-            "Berisso")).to_be_visible()
+            City.BERISSO)).to_be_visible()
 
     def test_should_be_able_to_create_a_new_client_city(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
@@ -626,3 +627,66 @@ class ClientCreateTestCaseCity(PlaywrightTestCase):
 
         expect(self.page.get_by_text(
             "Por favor ingrese una ciudad")).to_be_visible()
+
+    # test pedido 30 de junio
+    # agregar un test e2e que pruebe que todas las opciones de la clase enumerativa se pueden seleccionar en el form.
+    def test_city_choices(self):
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("NombreCliente")
+        self.page.get_by_label("Teléfono").fill("54221555232")
+        self.page.get_by_label("Email").fill("email@vetsoft.com")
+        self.page.get_by_label("Ciudad").select_option(City.BERISSO)
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text(
+            "NombreCliente")).to_be_visible()
+        expect(self.page.get_by_text(
+            "54221555232")).to_be_visible()
+        expect(self.page.get_by_text(
+            "email@vetsoft.com")).to_be_visible()
+        expect(self.page.get_by_text(
+            City.BERISSO)).to_be_visible()
+
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("NombreClientee")
+        self.page.get_by_label("Teléfono").fill("542215552322")
+        self.page.get_by_label("Email").fill("email2@vetsoft.com")
+        self.page.get_by_label("Ciudad").select_option("La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text(
+            "NombreClientee")).to_be_visible()
+        expect(self.page.get_by_text(
+            "542215552322")).to_be_visible()
+        expect(self.page.get_by_text(
+            "email2@vetsoft.com")).to_be_visible()
+        expect(self.page.get_by_text(
+            "La Plata")).to_be_visible()
+
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("NombreClienteee")
+        self.page.get_by_label("Teléfono").fill("542215552323")
+        self.page.get_by_label("Email").fill("email3@vetsoft.com")
+        self.page.get_by_label("Ciudad").select_option("Ensenada")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text(
+            "NombreClienteee")).to_be_visible()
+        expect(self.page.get_by_text(
+            "542215552323")).to_be_visible()
+        expect(self.page.get_by_text(
+            "email3@vetsoft.com")).to_be_visible()
+        expect(self.page.get_by_text(
+            "Ensenada")).to_be_visible()

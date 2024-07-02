@@ -1,7 +1,7 @@
 from django.shortcuts import reverse
 from django.test import TestCase
 
-from app.models import Client, Medicine, Product, Provider, Vet, Pet, Breed
+from app.models import Client, Medicine, Product, Provider, Vet, Pet, Breed, City
 import datetime
 
 
@@ -30,7 +30,7 @@ class ClientsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "city": "Berisso",
+                "city": City.BERISSO,
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -39,7 +39,7 @@ class ClientsTest(TestCase):
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, 54221555232)
-        self.assertEqual(clients[0].city, "Berisso")
+        self.assertEqual(clients[0].city, City.BERISSO)
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
         self.assertRedirects(response, reverse("clients_repo"))
@@ -104,7 +104,7 @@ class ClientsTest(TestCase):
             data={
                 "name": "Nombre",
                 "phone": "54312321",
-                "city": "Berisso",
+                "city": City.BERISSO,
                 "email": "email@vetsoft.com",
             },
         )
@@ -114,7 +114,7 @@ class ClientsTest(TestCase):
         self.assertEqual(clients[0].name, "Nombre")
         self.assertEqual(clients[0].phone, 54312321)
         self.assertEqual(clients[0].email, "email@vetsoft.com")
-        self.assertEqual(clients[0].city, "Berisso")
+        self.assertEqual(clients[0].city, City.BERISSO)
 
     def test_cannot_create_a_client_city(self):
         response = self.client.post(
@@ -306,7 +306,7 @@ class ClientsTestPhone(TestCase):
             data={
                 "name": "Nombre",
                 "phone": "54221555232",
-                "city": "Berisso",
+                "city": City.BERISSO,
                 "email": "email@vetsoft.com",
             },
         )
@@ -315,7 +315,7 @@ class ClientsTestPhone(TestCase):
 
         self.assertEqual(clients[0].name, "Nombre")
         self.assertEqual(clients[0].phone, 54221555232)
-        self.assertEqual(clients[0].city, "Berisso")
+        self.assertEqual(clients[0].city, City.BERISSO)
         self.assertEqual(clients[0].email, "email@vetsoft.com")
 
         self.assertRedirects(response, reverse("clients_repo"))
