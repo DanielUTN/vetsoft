@@ -12,8 +12,8 @@ def validate_client(data):
     email = data.get("email", "")
     city = data.get("city", "")
 
-    if name == "":
-        errors["name"] = "Por favor ingrese un nombre"
+    if not name.strip():
+        errors["name"] = "El nombre no puede estar vacío o contener solo espacios"
     elif not re.match("^[a-zA-Z ]+$", name):
         errors["name"] = "El nombre solo puede contener letras y espacios"
 
