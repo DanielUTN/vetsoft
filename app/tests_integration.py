@@ -12,6 +12,19 @@ class HomePageTest(TestCase):
 
 
 class ClientsTest(TestCase):
+
+    def test_validation_invalid_name_space(self):
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": " ",
+                "phone": "5422165438",
+                "city": "Berisso",
+                "email": "email@vetsoft.com",
+            },
+        )
+        self.assertContains(response, "El nombre no puede estar vacío o contener solo espacios")
+        
     def test_repo_use_repo_template(self):
         response = self.client.get(reverse("clients_repo"))
         self.assertTemplateUsed(response, "clients/repository.html")
